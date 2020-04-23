@@ -2,10 +2,10 @@ import os
 from flask import Flask, render_template, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 
-# na razie uploadowane rzeczy lądują w /AIIR
+# na razie uploadowane rzeczy lądują w /files
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 # można przefiltrować pliki przed uploadem
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

@@ -1,6 +1,8 @@
 import os
 from flask import Flask, render_template, request, flash, redirect, url_for
 from werkzeug.utils import secure_filename
+from engine import ClassificationEngine
+import pandas
 
 # na razie uploadowane rzeczy lądują w /files
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
@@ -36,14 +38,35 @@ def upload_file():
                                     filename=filename))
     return '''
     <!doctype html>
-    <title>Super Apka <3</title>
-    <h1>Gimme the file</h1>
+    <title>Classification engine</title>
+    <h1>Upload file</h1>
     <form method=post enctype=multipart/form-data>
       <input type=file name=file>
       <input type=submit value=Upload>
     </form>
     '''
 
+@app.route("/spark", methods = ['GET', 'POST'])
+def spark_task():
+    if request.method == 'POST':
+        testError, predictions = classification_engine.trainModel('files/' + request.form['text'])
+        
+        return render_template('results.html', tables = [predictions.to_html(classes='data')], titles=predictions.columns.values)
+        
+
+    return '''
+    <!doctype html>
+    <title>Classification engine</title>
+    <h1>Start task</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=text name=text>
+      <input type=submit value=Submit>
+    </form>
+    '''
+
 
 if __name__ == "__main__":
+    global classification_engine
+    classification_engine = ClassificationEngine()    
+    
     app.run(debug=True)

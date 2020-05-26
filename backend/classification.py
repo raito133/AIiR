@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
-from pyspark.ml.feature import OneHotEncoderEstimator, StringIndexer, VectorAssembler
+from pyspark.ml.feature import OneHotEncoder, StringIndexer, VectorAssembler
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.tuning import ParamGridBuilder, CrossValidator
 from pyspark.ml.classification import DecisionTreeClassifier
@@ -8,7 +8,15 @@ from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.classification import GBTClassifier
 from pyspark.ml.evaluation import BinaryClassificationEvaluator
 spark = SparkSession.builder.appName('ml-classifier').getOrCreate()
-import pandas
+from elasticsearch import Elasticsearch
+import os
+import sys
+
+ES_HOST = {
+        "host" : "localhost", 
+        "port" : 9200
+    }
+es = Elasticsearch(hosts = [ES_HOST])
 
 def openfile(path):
     return spark.read.csv(path, header = True, inferSchema = True)
@@ -26,7 +34,7 @@ def allColumns(df):
 def indexInputColumns(categoricalColumns,stages,df):
     for categoricalCol in categoricalColumns:
         stringIndexer = StringIndexer(inputCol = categoricalCol, outputCol = categoricalCol + 'Index')
-        encoder = OneHotEncoderEstimator(inputCols=[stringIndexer.getOutputCol()], outputCols=[categoricalCol + "classVec"])
+        encoder = OneHotEncoder(inputCols=[stringIndexer.getOutputCol()], outputCols=[categoricalCol + "classVec"])
         stages += [stringIndexer, encoder]
     return stages,df
 
@@ -106,7 +114,19 @@ def gbtClassifier(train,test):
 
 def doRandomForestClassification(filename):
     stages=[]
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 30,
+            'status': 'Reading file..' 
+        }
+    })
     df=openfile(filename)
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 40,
+            'status': 'Mapping..' 
+        }
+    })
     categoricalColumns=checkCategoricalColumns(df)
     numericColumns=checkNumericColumns(df)
     cols=allColumns(df)
@@ -114,14 +134,31 @@ def doRandomForestClassification(filename):
     stages,df = indexOutputColumn(stages,'deposit',df)
     stages,df = vectorAsFeatures(categoricalColumns,numericColumns,stages,df)
     selectedCols,df=pipelane(df,stages,cols)
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 50,
+            'status': 'Splitting data to train and test..' 
+        }
+    })
     train,test = splitDataToTrainAndTest(df)
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 60,
+            'status': 'Training model..' 
+        }
+    })
     rf = RandomForestClassifier(featuresCol = 'features', labelCol = 'label')
     rfModel = rf.fit(train)
     predictions = rfModel.transform(test)
     predictions.select('age', 'job', 'label', 'rawPrediction', 'prediction', 'probability')
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 80,
+            'status': 'Calculating accuracy..' 
+        }
+    })
     evaluator = binaryClassificationEvaluator(predictions)
     accuracy = evaluator.evaluate(predictions)
-    predictions = predictions.toPandas()
     return accuracy, predictions, rfModel
     # print("Test Error = %g" % (1.0 - accuracy))
 
@@ -142,3 +179,39 @@ def doRandomForestClassification(filename):
 #     accuracy = evaluator.evaluate(predictions)
 #     return accuracy, predictions
     
+if __name__ == "__main__":
+    task_id = sys.argv[1]
+    print(task_id)
+
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 10,
+            'status': 'Spark job started..' 
+        }
+    })
+
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 20,
+            'status': 'Classification..' 
+        }
+    })
+
+    accuracy, predictions, rfModel = doRandomForestClassification("bank.csv")
+
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 95,
+            'status': 'Converting to csv..' 
+        }
+    })
+
+    predictions.toPandas().to_csv(str(task_id) + 'output.csv')
+
+    es.update(index='spark-jobs', doc_type='job', id=task_id, body={
+        'doc': { 
+            'current': 100,
+            'status': 'Spark job finished.',
+            'result': str(task_id) + 'output.csv'
+        }
+    })

@@ -7,7 +7,18 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1cVAN3mulZLhhaSylL1q4s3wcea" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -15,10 +26,16 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\kapits\PycharmProjects\swiotp" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\kapits\PycharmProjects\swiotp" />
+      <recent name="C:\Users\kapits\PycharmProjects\swiotp\templates" />
+      <recent name="C:\Users\kapits\PycharmProjects\swiotp\files" />
     </key>
   </component>
   <component name="ServiceViewManager">
@@ -51,5 +68,9 @@
       <screen x="-1920" y="0" width="1920" height="1200" />
     </state>
     <state x="-718" y="405" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1080/1920.0.1920.1080/-1920.0.1920.1200@-1920.0.1920.1200" timestamp="1590606508547" />
+    <state x="-750" y="346" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1590612480818">
+      <screen x="-1920" y="0" width="1920" height="1200" />
+    </state>
+    <state x="-750" y="346" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1080/1920.0.1920.1080/-1920.0.1920.1200@-1920.0.1920.1200" timestamp="1590612480818" />
   </component>
 </project>

@@ -2,7 +2,7 @@
 
 # do odpalenia:
 Zakładając, że projekt jest w katalogu nazwa, a terminal katalog wyżej:
-- (\*nix) `export FLASK_APP=nazwa`
+- (Linux) `export FLASK_APP=nazwa`
 - (Windows) `set FLASK_APP=nazwa`
 - `flask run`
 

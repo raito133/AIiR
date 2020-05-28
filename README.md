@@ -1,8 +1,8 @@
 # AIiR backend work in progress
 
 # do odpalenia:
-Zakładając, że projekt jest w katalogu <nazwa>, a terminal katalog wyżej:
-- (unix/windows) export/set FLASK_APP=<nazwa>
+Zakładając, że projekt jest w katalogu nazwa, a terminal katalog wyżej:
+- (unix/windows) export/set FLASK_APP=nazwa
 - flask run
 
 # notes

@@ -7,4 +7,8 @@ Zakładając, że projekt jest w katalogu nazwa, a terminal katalog wyżej:
 - `flask run`
 
 # notes
-Aktualna wersja ma hotfixa, przez którego działa poprawnie tylko pod windowsem. Wynika to z błędu ze ścieżkami, nad którym pracuję. 
+Na razie wszelkie formularze, czy logowanie robione jest po formularzach w html-u. Faktyczna funkcjonalność aplikacji (ładny login/logout, lepsza prezentacja danych) będzie na frontendzie.
+
+# to do
+- Popracować nad ścieżami do zapisywania plików.
+- Dopracować bazę danych. Może przypisanie do userów tam ich plików/zadań. Konta administratora?

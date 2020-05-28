@@ -1,6 +1,6 @@
 # AIiR
 
-# To do po spotkaniu:
+# TO DO po spotkaniu:
 ## Oddać do 10.06
 ### Strona sparka
 - [ ] Kolejka zadań

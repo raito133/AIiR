@@ -11,7 +11,7 @@
 - [ ] Pasek postępu w uczeniu (Nice To Have)
 ### Strona backendu
 - [ ] Sesje, zapisywanie danych, żeby nie podglądać innych danych innych użytkowników
-- [ ] Widok historii zadań (Zadania do bazy)
+- [ ] Widok historii zadań (Zadania do bazy, same zadania jak i wyniki)
 ### Strona frontu
 - [ ] W zasadzie całość
 ### Mix

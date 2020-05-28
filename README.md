@@ -2,7 +2,8 @@
 
 # do odpalenia:
 Zakładając, że projekt jest w katalogu nazwa, a terminal katalog wyżej:
-- (unix/windows) export/set FLASK_APP=nazwa
+- (unix) `export FLASK_APP=nazwa`
+- (windows) `set FLASK_APP=nazwa`
 - flask run
 
 # notes

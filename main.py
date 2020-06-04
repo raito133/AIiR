@@ -68,7 +68,7 @@ def upload_file():
 @app.route('/dotask', methods=['GET'])
 def index():
     if request.method == 'GET':
-        return render_template('index.html')
+        return render_template('task.html')
 
 
 @app.route('/status/<task_id>')

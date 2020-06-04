@@ -1,10 +1,10 @@
-from classification import doRandomForestClassification
+from . import classification
+
 
 class ClassificationEngine:
 
-
     def trainModel(self, filename):
-        accuracy, self.predictions, self.model = doRandomForestClassification(filename)
+        accuracy, self.predictions, self.model = classification.doRandomForestClassification(filename)
         self.testError = 1.0 - accuracy
         return self.testError, self.predictions
 

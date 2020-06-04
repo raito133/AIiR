@@ -1,10 +1,13 @@
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
-from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint
+from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename, redirect
 from engine import ClassificationEngine
 from datetime import datetime
 import pandas as pd
 from celery import Celery
+from . import db
+from . import engine
 
 from elasticsearch import Elasticsearch  
 
@@ -12,6 +15,9 @@ from elasticsearch import Elasticsearch
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 # można przefiltrować pliki przed uploadem
 ALLOWED_EXTENSIONS = {'csv'}
+
+
+classification_engine = engine.ClassificationEngine()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -37,8 +43,13 @@ def allowed_file(filename):
 
 
 # mozna wrzucić bezpośrednio przez '/', lub normalnie POSTem
-@app.route('/', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -52,21 +63,22 @@ def upload_file():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('upload_file',
-                                    filename=filename))
+            file.save(os.path.abspath(os.path.join(os.getcwd(), 'files/')) + filename)
+            return render_template('profile.html')
     return '''
-    <!doctype html>
-    <title>Classification engine</title>
-    <h1>Upload file</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+        <!doctype html>
+        <title>Classification engine</title>
+        <h1>Upload file</h1>
+        <form method=post enctype=multipart/form-data>
+          <input type=file name=file>
+          <input type=submit value=Upload>
+        </form>
+        '''
+
 
 @app.route('/dotask', methods=['GET'])
-def index():
+@login_required
+def dotask():
     if request.method == 'GET':
         return render_template('task.html')
 

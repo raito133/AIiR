@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from flask_login import login_user
+from flask_login import login_user, login_manager, login_required, logout_user
 
 auth = Blueprint('auth', __name__)
 
@@ -54,5 +54,12 @@ def signup_post():
     return redirect(url_for('auth.login'))
 
 @auth.route('/logout')
+@login_required
 def logout():
-    return 'Logout'
+    logout_user()
+    if session.get('was_once_logged_in'):
+        # prevent flashing automatically logged out message
+        del session['was_once_logged_in']
+    flash('You have successfully logged yourself out.')
+    return redirect('/login')
+

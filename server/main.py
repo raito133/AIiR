@@ -16,7 +16,6 @@ UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 ALLOWED_EXTENSIONS = {'csv'}
 
 
-
 ES_HOST = {
     "host" : "localhost", 
     "port" : 9200
@@ -104,10 +103,11 @@ def sparktask():
             }
         })
         print(res)
-
+    task_id_str = str(task.id)
     es.index(index='spark-jobs', doc_type='job', id=task.id, body={
         'current': 0,
         'total': 100,
+        'id_string': task_id_str,
         'status': 'Spark job pending..',
         'start_time': datetime.utcnow()
     })

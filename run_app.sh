@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 . venv/bin/activate
-python __init__.py
+export FLASK_APP=server
+flask run

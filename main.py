@@ -1,27 +1,48 @@
-from flask import Blueprint, render_template, request, flash, url_for
-from flask_login import login_required, current_user
-from werkzeug.utils import redirect, secure_filename
-import pandas
-
-from . import engine
-from . import db
 import os
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint
+from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename, redirect
+# from engine import ClassificationEngine
+from datetime import datetime
+import pandas as pd
+from celery import Celery
+# from . import db
+from . import engine
 
-UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
-
-# można przefiltrować pliki przed uploadem
-ALLOWED_EXTENSIONS = {'csv'}
-classification_engine = engine.ClassificationEngine()
+from elasticsearch import Elasticsearch
 
 main = Blueprint('main', __name__)
 
+# na razie uploadowane rzeczy lądują w /files
+UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
+# można przefiltrować pliki przed uploadem
+ALLOWED_EXTENSIONS = {'csv'}
+
+classification_engine = engine.ClassificationEngine()
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
+ES_HOST = {
+    "host": "localhost",
+    "port": 9200
+}
+es = Elasticsearch(hosts=[ES_HOST])
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@main.route('/')
+# mozna wrzucić bezpośrednio przez '/', lub normalnie POSTem
+@main.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -55,21 +76,84 @@ def profile():
         '''
 
 
-@main.route("/spark", methods=['GET', 'POST'])
+@main.route('/dotask', methods=['GET'])
 @login_required
-def spark_task():
-    if request.method == 'POST':
-        testError, predictions = classification_engine.trainModel('swiotp/files/' + request.form['text'])
+def dotask():
+    if request.method == 'GET':
+        return render_template('task.html')
 
-        return render_template('results.html', tables=[predictions.to_html(classes='data')],
-                               titles=predictions.columns.values)
 
-    return '''
-    <!doctype html>
-    <title>Classification engine</title>
-    <h1>Start task</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=text name=text>
-      <input type=submit value=Submit>
-    </form>
-    '''
+@app.route('/status/<task_id>')
+def taskstatus(task_id, methods=['GET']):
+    task = spark_job_task.AsyncResult(task_id)
+
+    if task.state == 'FAILURE':
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 1,
+            'status': str(task.info),  # this is the exception raised
+        }
+    else:
+        # otherwise get the task info from ES
+        es_task_info = es.get(index='spark-jobs', doc_type='job', id=task_id)
+        response = es_task_info['_source']
+        response['state'] = task.state
+
+    return jsonify(response)
+
+
+@app.route('/sparktask', methods=['POST'])
+def sparktask():
+    task = spark_job_task.apply_async()
+
+    if not es.indices.exists('spark-jobs'):
+        print("creating '%s' index..." % ('spark-jobs'))
+        res = es.indices.create(index='spark-jobs', body={
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 0
+            }
+        })
+        print(res)
+
+    es.index(index='spark-jobs', doc_type='job', id=task.id, body={
+        'current': 0,
+        'total': 100,
+        'status': 'Spark job pending..',
+        'start_time': datetime.utcnow()
+    })
+
+    return jsonify({}), 202, {'Location': url_for('taskstatus', task_id=task.id)}
+
+
+@app.route("/spark_task/<result>", methods=['GET'])
+def result(result):
+    predictions = pd.read_csv(result)
+    return render_template('results.html', tables=[predictions.to_html(classes='data')],
+                           titles=predictions.columns.values)
+
+
+@celery.task(bind=True)
+def spark_job_task(self):
+    task_id = self.request.id
+
+    master_path = 'local[2]'
+
+    project_dir = ''
+
+    jar_path = '~/spark/jars/elasticsearch-hadoop-2.1.0.jar'
+
+    spark_code_path = project_dir + 'classification.py'
+
+    os.system("~/spark/bin/spark-submit --master %s --jars %s %s %s" %
+              (master_path, jar_path, spark_code_path, task_id))
+
+    return {'current': 100, 'total': 100, 'status': 'Task completed!', 'result': 42}
+
+
+if __name__ == "__main__":
+    classification_engine = ClassificationEngine()
+
+    app.run(debug=True)

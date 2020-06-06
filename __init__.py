@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask, url_for
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import os
 
 # na razie uploadowane rzeczy lądują w /files
+from werkzeug.utils import redirect
+
 UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 
 # init SQLAlchemy so we can use it later in our models
@@ -17,11 +19,14 @@ def create_app():
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['TESTING'] = False
+
     db.init_app(app)
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager = LoginManager(app)
     login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+
 
     from .models import User
 
@@ -29,6 +34,10 @@ def create_app():
     def load_user(user_id):
         # since the user_id is just the primary key of our user table, use it in the query for the user
         return User.query.get(int(user_id))
+
+    @login_manager.unauthorized_handler
+    def unauthorized_handler():
+        return redirect(url_for('auth.login'))
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

@@ -19,7 +19,7 @@ ES_HOST = {
 es = Elasticsearch(hosts = [ES_HOST])
 
 def openfile(path):
-    return spark.read.csv(path, header = True, inferSchema = True)
+    return spark.read.csv('files/' + path, header = True, inferSchema = True)
     
 def checkNumericColumns(df):
     return [t[0] for t in df.dtypes if t[1] == 'int']

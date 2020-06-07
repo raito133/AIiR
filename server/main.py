@@ -39,6 +39,7 @@ def index():
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    print('sesja: ' + str(session['email']))
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -134,6 +135,7 @@ def sparktask():
 
 @main.route("/spark_task/<result>", methods=['GET'])
 def result(result):
+    print('>>>>>>session: ' + str(session['email']))
     user = User.query.filter_by(email=session['email']).first()
     if str(result[:-10]) not in user.gettasks():
         return render_template('profile.html')

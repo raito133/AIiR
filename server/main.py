@@ -1,13 +1,17 @@
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint, session
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename, redirect
 import pandas as pd
 from celery import Celery
-from elasticsearch import Elasticsearch  
-
+from elasticsearch import Elasticsearch
+from sqlalchemy import update
 from datetime import datetime
+
+from server import db
+from server.models import User
 from server.modules import tasks as t
+
 main = Blueprint('main', __name__)
 
 # na razie uploadowane rzeczy lądują w /files
@@ -15,12 +19,11 @@ UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 # można przefiltrować pliki przed uploadem
 ALLOWED_EXTENSIONS = {'csv'}
 
-
 ES_HOST = {
-    "host" : "localhost", 
-    "port" : 9200
+    "host": "localhost",
+    "port": 9200
 }
-es = Elasticsearch(hosts = [ES_HOST])     
+es = Elasticsearch(hosts=[ES_HOST])
 
 
 def allowed_file(filename):
@@ -72,23 +75,32 @@ def dotask():
 @main.route('/status/<task_id>')
 @login_required
 def taskstatus(task_id, methods=['GET']):
-    task = t.spark_job_task.AsyncResult(task_id)
+    # if task_id in user.tasks
+    #     do
+    # else
+    #     don't
+    user = User.query.filter_by(email=session['email']).first()
+    if task_id in user.gettasks():
+        task = t.spark_job_task.AsyncResult(task_id)
 
-    if task.state == 'FAILURE':
-        # something went wrong in the background job
-        response = {
-            'state': task.state,
-            'current': 1,
-            'total': 1,
-            'status': str(task.info),  # this is the exception raised
-        }
+        if task.state == 'FAILURE':
+            # something went wrong in the background job
+            response = {
+                'state': task.state,
+                'current': 1,
+                'total': 1,
+                'status': str(task.info),  # this is the exception raised
+            }
+        else:
+            # otherwise get the task info from ES
+            es_task_info = es.get(index='spark-jobs', doc_type='job', id=task_id)
+            response = es_task_info['_source']
+            response['state'] = task.state
+
+        return jsonify(response)
     else:
-        # otherwise get the task info from ES
-        es_task_info = es.get(index='spark-jobs', doc_type='job', id=task_id)
-        response = es_task_info['_source']
-        response['state'] = task.state
+        return render_template('profile.html')
 
-    return jsonify(response)
 
 @main.route('/sparktask', methods=['POST'])
 def sparktask():
@@ -104,6 +116,12 @@ def sparktask():
         })
         print(res)
     task_id_str = str(task.id)
+    user = User.query.filter_by(email=session['email']).first()
+    newtasks = str(user.tasks) + task_id_str + ";"
+    stt = update(User).where(User.email == session['email']).values(tasks=newtasks)
+    db.session.execute(stt)
+    db.session.commit()
+
     es.index(index='spark-jobs', doc_type='job', id=task.id, body={
         'current': 0,
         'total': 100,

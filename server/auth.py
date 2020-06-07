@@ -20,6 +20,8 @@ def login_post():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
+    session['email'] = email
+
     user = User.query.filter_by(email=email).first()
 
     # check if user actually exists

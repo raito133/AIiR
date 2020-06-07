@@ -2,9 +2,14 @@
 
 {% block content %}
 <h1 class="title">
-  Welcome, {{ name }}!
+  Welcome!
 </h1>
 <div class="box">
-  <button class="button is-block is-info is-large is-fullwidth">.</button>
+  <button id="doTaskBtn" class="button is-block is-info is-large is-fullwidth">Do task!</button>
+  <script type="text/javascript">
+    document.getElementById("doTaskBtn").onclick = function () {
+      location.href = "{{ url_for('main.dotask') }}";
+      };
+  </script>
 </div>
 {% endblock %}

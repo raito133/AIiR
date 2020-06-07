@@ -80,31 +80,36 @@ def taskstatus(task_id, methods=['GET']):
     # else
     #     don't
     user = User.query.filter_by(email=session['email']).first()
-    if task_id in user.gettasks():
-        task = t.spark_job_task.AsyncResult(task_id)
-
-        if task.state == 'FAILURE':
-            # something went wrong in the background job
-            response = {
-                'state': task.state,
-                'current': 1,
-                'total': 1,
-                'status': str(task.info),  # this is the exception raised
-            }
-        else:
-            # otherwise get the task info from ES
-            es_task_info = es.get(index='spark-jobs', doc_type='job', id=task_id)
-            response = es_task_info['_source']
-            response['state'] = task.state
-
-        return jsonify(response)
-    else:
+    if str(task_id) not in user.gettasks():
         return render_template('profile.html')
+
+    task = t.spark_job_task.AsyncResult(task_id)
+
+    if task.state == 'FAILURE':
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'current': 1,
+            'total': 1,
+            'status': str(task.info),  # this is the exception raised
+        }
+    else:
+        # otherwise get the task info from ES
+        es_task_info = es.get(index='spark-jobs', doc_type='job', id=task_id)
+        response = es_task_info['_source']
+        response['state'] = task.state
+
+    return jsonify(response)
 
 
 @main.route('/sparktask', methods=['POST'])
 def sparktask():
     task = t.spark_job_task.apply_async()
+
+    task_id_str = str(task.id)
+    user = User.query.filter_by(email=session['email']).first()
+    user.tasks += user.tasks + task_id_str + ";"
+    db.session.commit()
 
     if not es.indices.exists('spark-jobs'):
         print("creating '%s' index..." % ('spark-jobs'))
@@ -115,12 +120,6 @@ def sparktask():
             }
         })
         print(res)
-    task_id_str = str(task.id)
-    user = User.query.filter_by(email=session['email']).first()
-    newtasks = str(user.tasks) + task_id_str + ";"
-    stt = update(User).where(User.email == session['email']).values(tasks=newtasks)
-    db.session.execute(stt)
-    db.session.commit()
 
     es.index(index='spark-jobs', doc_type='job', id=task.id, body={
         'current': 0,
@@ -135,6 +134,10 @@ def sparktask():
 
 @main.route("/spark_task/<result>", methods=['GET'])
 def result(result):
+    user = User.query.filter_by(email=session['email']).first()
+    if str(result[:-10]) not in user.gettasks():
+        return render_template('profile.html')
+
     predictions = pd.read_csv(result)
     return render_template('results.html', tables=[predictions.to_html(classes='data')],
                            titles=predictions.columns.values)

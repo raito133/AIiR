@@ -134,10 +134,11 @@ def sparktask():
 
 
 @main.route("/spark_task/<result>", methods=['GET'])
+@login_required
 def result(result):
     print('>>>>>>session: ' + str(session['email']))
     user = User.query.filter_by(email=session['email']).first()
-    if str(result[:-10]) not in user.gettasks():
+    if str(result[:36]) not in user.gettasks():
         return render_template('profile.html')
 
     predictions = pd.read_csv(result)

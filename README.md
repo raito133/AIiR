@@ -1,22 +1,15 @@
 
-# AIiR backend work in progress
+# AIiR - Flask | Spark
 
-# do odpalenia:
-Zakładając, że projekt jest w katalogu nazwa, a terminal katalog wyżej:
-- (Linux) `export FLASK_APP=nazwa`
-- (Windows) `set FLASK_APP=nazwa`
-- `flask run`
+# Run:
+`./run_services.sh`  
+`./run_celery.sh`  
+`./run_app.sh`  
 
-# notes
+# Notes
 Na razie wszelkie formularze, czy logowanie robione jest po formularzach w html-u. Faktyczna funkcjonalność aplikacji (ładny login/logout, lepsza prezentacja danych) będzie na frontendzie.
 
-# to do
-- Popracować nad ścieżami do zapisywania plików.
-- Dopracować bazę danych. Może przypisanie do userów tam ich plików/zadań. Konta administratora?
-
-# AIiR
-
-# TO DO po spotkaniu:
+# TO DO:
 ## Oddać do 10.06
 ### Strona sparka
 - [ ] Kolejka zadań

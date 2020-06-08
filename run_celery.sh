@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
 . venv/bin/activate
-celery worker -A server.modules.tasks.celery --loglevel=info --concurrency=2
+
+celery worker -A server.modules.tasks.celery --loglevel=info --concurrency=16
+

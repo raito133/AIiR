@@ -12,3 +12,10 @@ class User(UserMixin, db.Model):
     def gettasks(self):
         x = self.tasks.split(';')
         return x
+
+      
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id_string = db.Column(db.String(100), unique=True)
+    

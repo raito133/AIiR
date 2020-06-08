@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="ac8951fe-fee0-4b2f-8f10-b0b17be7538a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/swiotp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/swiotp.iml" afterDir="false" />
+    <list default="true" id="ac8951fe-fee0-4b2f-8f10-b0b17be7538a" name="Default Changelist" comment="Przypisanie tasków do userów cd.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/templates/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/templates/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/db.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/server/db.sqlite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +37,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1cVAN3mulZLhhaSylL1q4s3wcea" />
@@ -29,6 +51,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -55,20 +78,70 @@
       <option name="presentableId" value="Default" />
       <updated>1590603343578</updated>
     </task>
+    <task id="LOCAL-00001" summary="Przekierowanie do dotask z profile">
+      <created>1591529416744</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1591529416744</updated>
+    </task>
+    <task id="LOCAL-00002" summary="przypisanie tasków do userów">
+      <created>1591552556442</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1591552556442</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Przypisanie tasków do userów cd.">
+      <created>1591558298371</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1591558298371</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Przekierowanie do dotask z profile" />
+    <MESSAGE value="przypisanie tasków do userów" />
+    <MESSAGE value="Przypisanie tasków do userów cd." />
+    <option name="LAST_COMMIT_MESSAGE" value="Przypisanie tasków do userów cd." />
+  </component>
   <component name="WindowStateProjectService">
-    <state x="-718" y="405" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1590606508547">
-      <screen x="-1920" y="0" width="1920" height="1200" />
+    <state x="1229" y="423" width="590" height="403" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591548768530">
+      <screen x="72" y="27" width="1848" height="1173" />
     </state>
     <state x="-718" y="405" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1080/1920.0.1920.1080/-1920.0.1920.1200@-1920.0.1920.1200" timestamp="1590606508547" />
+    <state x="1229" y="423" width="590" height="403" key="#com.intellij.fileTypes.FileTypeChooser/72.27.1848.1173@72.27.1848.1173" timestamp="1591548768530" />
     <state x="-750" y="346" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1590612480818">
       <screen x="-1920" y="0" width="1920" height="1200" />
     </state>
     <state x="-750" y="346" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1080/1920.0.1920.1080/-1920.0.1920.1200@-1920.0.1920.1200" timestamp="1590612480818" />
+    <state x="172" y="127" width="1408" height="823" key="DiffContextDialog" timestamp="1591529693233">
+      <screen x="72" y="27" width="1608" height="1023" />
+    </state>
+    <state x="172" y="127" width="1408" height="823" key="DiffContextDialog/72.27.1608.1023@72.27.1608.1023" timestamp="1591529693233" />
     <state x="365" y="173" width="1022" height="737" key="SettingsEditor" timestamp="1591526328018">
       <screen x="72" y="27" width="1608" height="1023" />
     </state>
     <state x="365" y="173" width="1022" height="737" key="SettingsEditor/72.27.1608.1023@72.27.1608.1023" timestamp="1591526328018" />
+    <state x="531" y="310" width="800" height="535" key="Vcs.Push.Dialog.v2" timestamp="1591558308652">
+      <screen x="72" y="27" width="1848" height="1173" />
+    </state>
+    <state x="471" y="274" width="800" height="535" key="Vcs.Push.Dialog.v2/72.27.1608.1023@72.27.1608.1023" timestamp="1591529578622" />
+    <state x="531" y="310" width="800" height="535" key="Vcs.Push.Dialog.v2/72.27.1848.1173@72.27.1848.1173" timestamp="1591558308652" />
   </component>
 </project>

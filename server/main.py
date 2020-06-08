@@ -1,13 +1,17 @@
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify, Blueprint, session
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename, redirect
 import pandas as pd
 from celery import Celery
-from elasticsearch import Elasticsearch  
-
+from elasticsearch import Elasticsearch
+from sqlalchemy import update
 from datetime import datetime
+
+from server import db
+from server.models import User
 from server.modules import tasks as t
+
 main = Blueprint('main', __name__)
 
 # na razie uploadowane rzeczy lądują w /files
@@ -15,12 +19,11 @@ UPLOAD_FOLDER = os.path.abspath(os.path.join(os.getcwd(), 'files'))
 # można przefiltrować pliki przed uploadem
 ALLOWED_EXTENSIONS = {'csv'}
 
-
 ES_HOST = {
-    "host" : "localhost", 
-    "port" : 9200
+    "host": "localhost",
+    "port": 9200
 }
-es = Elasticsearch(hosts = [ES_HOST])     
+es = Elasticsearch(hosts=[ES_HOST])
 
 
 def allowed_file(filename):
@@ -36,6 +39,7 @@ def index():
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    print('sesja: ' + str(session['email']))
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -72,6 +76,14 @@ def dotask():
 @main.route('/status/<task_id>')
 @login_required
 def taskstatus(task_id, methods=['GET']):
+    # if task_id in user.tasks
+    #     do
+    # else
+    #     don't
+    user = User.query.filter_by(email=session['email']).first()
+    if str(task_id) not in user.gettasks():
+        return render_template('profile.html')
+
     task = t.spark_job_task.AsyncResult(task_id)
 
     if task.state == 'FAILURE':
@@ -90,9 +102,15 @@ def taskstatus(task_id, methods=['GET']):
 
     return jsonify(response)
 
+
 @main.route('/sparktask', methods=['POST'])
 def sparktask():
     task = t.spark_job_task.apply_async()
+
+    task_id_str = str(task.id)
+    user = User.query.filter_by(email=session['email']).first()
+    user.tasks += user.tasks + task_id_str + ";"
+    db.session.commit()
 
     if not es.indices.exists('spark-jobs'):
         print("creating '%s' index..." % ('spark-jobs'))
@@ -103,7 +121,7 @@ def sparktask():
             }
         })
         print(res)
-    task_id_str = str(task.id)
+
     es.index(index='spark-jobs', doc_type='job', id=task.id, body={
         'current': 0,
         'total': 100,
@@ -117,6 +135,11 @@ def sparktask():
 
 @main.route("/spark_task/<result>", methods=['GET'])
 def result(result):
+    print('>>>>>>session: ' + str(session['email']))
+    user = User.query.filter_by(email=session['email']).first()
+    if str(result[:-10]) not in user.gettasks():
+        return render_template('profile.html')
+
     predictions = pd.read_csv(result)
     return render_template('results.html', tables=[predictions.to_html(classes='data')],
                            titles=predictions.columns.values)

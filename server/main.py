@@ -9,7 +9,7 @@ from sqlalchemy import update
 from datetime import datetime
 
 from server import db
-from server.models import User
+from server.models import User, Task
 from server.modules import tasks as t
 
 main = Blueprint('main', __name__)
@@ -129,7 +129,10 @@ def sparktask():
         'status': 'Spark job pending..',
         'start_time': datetime.utcnow()
     })
-
+    link = 'http://localhost:5000/spark_task/' + task_id_str + 'output.csv'
+    new_task = Task(user_id=user.id, id_string = link)
+    db.session.add(new_task)
+    db.session.commit()
     return jsonify({}), 202, {'Location': url_for('main.taskstatus', task_id=task.id)}
 
 
@@ -144,3 +147,13 @@ def result(result):
     predictions = pd.read_csv(result)
     return render_template('results.html', tables=[predictions.to_html(classes='data')],
                            titles=predictions.columns.values)
+
+@main.route("/history", methods=['GET'])
+@login_required
+def history():
+    tasks = []
+    user = User.query.filter_by(email=session['email']).first()
+    tasks_db = Task.query.filter_by(user_id=user.id)
+    for t in tasks_db:
+        tasks.append(t.id_string)
+    return render_template('history.html', tasks=tasks)

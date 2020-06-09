@@ -2,6 +2,7 @@
 {% block content %}
 	<h1>History:</h1>
 {% for link in tasks %}
-    <p><a href={{link}} >{{link}}</a></p>
+            <p><a href=http://localhost:5000/spark_task/{{link}}output.csv >http://localhost:5000/spark_task/{{link}}output.csv     </a>
+            <a href=http://localhost:5000/status/{{link}}>Status</a></p>
 {% endfor %}
 {% endblock %}

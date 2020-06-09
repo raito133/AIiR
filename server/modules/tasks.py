@@ -6,7 +6,7 @@ celery = Celery(__name__, backend='redis://localhost:6379/0', broker='redis://lo
 def spark_job_task(self):
     task_id = self.request.id
 
-    master_path = 'local[2]' # spark://192.168.1.30:7077
+    master_path = 'spark://192.168.1.30:7077'
 
     project_dir = ''
 

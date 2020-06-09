@@ -121,7 +121,7 @@ def sparktask():
         'status': 'Spark job pending..',
         'start_time': datetime.utcnow()
     })
-    link = 'http://localhost:5000/spark_task/' + task_id_str + 'output.csv'
+    link = task_id_str
     new_task = Task(user_id=user.id, id_string = link)
     db.session.add(new_task)
     db.session.commit()

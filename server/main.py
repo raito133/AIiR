@@ -55,15 +55,7 @@ def profile():
             filename = secure_filename(file.filename)
             file.save(os.path.abspath(os.path.join(os.getcwd(), 'files/')) + filename)
             return render_template('profile.html')
-    return '''
-        <!doctype html>
-        <title>Classification engine</title>
-        <h1>Upload file</h1>
-        <form method=post enctype=multipart/form-data>
-          <input type=file name=file>
-          <input type=submit value=Upload>
-        </form>
-        '''
+    return render_template('profile_upload.html')
 
 
 @main.route('/dotask', methods=['GET'])

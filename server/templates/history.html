@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
+{% extends "base.html" %}
+{% block content %}
+	<h1>History:</h1>
 {% for link in tasks %}
             <p><a href=http://localhost:5000/spark_task/{{link}}output.csv >http://localhost:5000/spark_task/{{link}}output.csv     </a>
             <a href=http://localhost:5000/status/{{link}}>Status</a></p>
 {% endfor %}
-</body>
-</html>
+{% endblock %}

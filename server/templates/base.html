@@ -22,7 +22,14 @@
                                 Home
                             </a>
                             <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Profile
+                                Upload
+                            </a>
+
+                            <a href="{{ url_for('main.dotask') }}" class="navbar-item">
+                                Do Task
+                            </a>
+							<a href="{{ url_for('main.history') }}" class="navbar-item">
+                                History
                             </a>
                             <a href="{{ url_for('auth.login') }}" class="navbar-item">
                                 Login
@@ -30,7 +37,7 @@
                             <a href="{{ url_for('auth.signup') }}" class="navbar-item">
                                 Sign Up
                             </a>
-                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+							<a href="{{ url_for('auth.logout') }}" class="navbar-item">
                                 Logout
                             </a>
                         </div>
